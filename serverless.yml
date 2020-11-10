@@ -1,5 +1,4 @@
-service:
-  name: kool-auctions-svs
+service: kool-auctions-svs
 
 plugins:
   - serverless-bundle
