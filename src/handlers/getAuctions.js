@@ -5,14 +5,23 @@ import errors from 'http-errors';
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
 async function getAuctions(event, context) {
+  const { status } = event.queryStringParameters;
   let auctions;
 
+  const params = {
+    TableName: process.env.AUCTIONS_TABLE_NAME,
+    IndexName: 'statusAndEndDate',
+    KeyConditionExpression: '#status = :status',
+    ExpressionAttributeValues: {
+      ':status': status,
+    },
+    ExpressionAttributeNames: {
+      '#status': 'status',
+    },
+  };
+
   try {
-    const result = await dynamoDB
-      .scan({
-        TableName: process.env.AUCTIONS_TABLE_NAME,
-      })
-      .promise();
+    const result = await dynamoDB.query(params).promise();
 
     auctions = result.Items;
   } catch (err) {
